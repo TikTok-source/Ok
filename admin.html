@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
+<title>Token Cards — Admin</title>
+
+<link rel="icon"
+      type="image/png"
+      href="./icon.png.PNG">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:-apple-system,BlinkMacSystemFont,
+                "Segoe UI",Roboto,Arial,sans-serif;
+    background:#080b12;
+    color:#fff;
+    min-height:100vh;
+}
+
+header{
+    padding:18px 20px;
+    border-bottom:1px solid #202634;
+    background:#0d111a;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.header-inner{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:19px;
+    font-weight:800;
+}
+
+.logo img{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+}
+
+.admin-badge{
+    font-size:12px;
+    color:#9da8bb;
+    background:#151b27;
+    padding:7px 10px;
+    border-radius:8px;
+}
+
+main{
+    max-width:1100px;
+    margin:auto;
+    padding:25px 16px 50px;
+}
+
+.login{
+    max-width:430px;
+    margin:70px auto;
+    background:#10151f;
+    border:1px solid #252d3b;
+    border-radius:18px;
+    padding:25px;
+}
+
+.login h1{
+    font-size:25px;
+    margin-bottom:8px;
+}
+
+.login p{
+    color:#8994a7;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:22px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:11px;
+    border:1px solid #30394a;
+    background:#090d14;
+    color:#fff;
+    outline:none;
+    font-size:15px;
+}
+
+input:focus{
+    border-color:#667085;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    font-weight:700;
+    border-radius:10px;
+}
+
+.login button{
+    width:100%;
+    margin-top:12px;
+    padding:14px;
+    background:#fff;
+    color:#080b12;
+}
+
+.error{
+    margin-top:13px;
+    color:#ff7b7b;
+    font-size:13px;
+    display:none;
+}
+
+.dashboard{
+    display:none;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:22px;
+}
+
+.top h1{
+    font-size:28px;
+}
+
+.refresh{
+    padding:11px 15px;
+    background:#171e2b;
+    color:#fff;
+    border:1px solid #30394a;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:22px;
+}
+
+.stat{
+    background:#10151f;
+    border:1px solid #252d3b;
+    border-radius:15px;
+    padding:18px;
+}
+
+.stat-label{
+    color:#8994a7;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.stat-value{
+    font-size:25px;
+    font-weight:800;
+}
+
+.requests{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.request{
+    background:#10151f;
+    border:1px solid #252d3b;
+    border-radius:16px;
+    padding:18px;
+}
+
+.request-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.request-id{
+    color:#8994a7;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+.request-name{
+    font-size:18px;
+    font-weight:800;
+}
+
+.request-email{
+    color:#9ba5b5;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.tokens{
+    font-size:22px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.price{
+    color:#aab3c1;
+    font-size:13px;
+    margin-top:3px;
+    text-align:right;
+}
+
+.review{
+    margin-top:15px;
+    background:#090d14;
+    border-radius:10px;
+    padding:12px;
+    color:#b7c0ce;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.meta{
+    margin-top:13px;
+    color:#737e91;
+    font-size:12px;
+}
+
+.status{
+    display:inline-block;
+    margin-top:12px;
+    padding:6px 9px;
+    border-radius:8px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.pending{
+    background:#332a12;
+    color:#f2c75c;
+}
+
+.approved{
+    background:#12321f;
+    color:#6ee7a0;
+}
+
+.rejected{
+    background:#35171b;
+    color:#ff858d;
+}
+
+.actions{
+    display:flex;
+    gap:9px;
+    margin-top:15px;
+}
+
+.actions button{
+    flex:1;
+    padding:12px;
+}
+
+.approve{
+    background:#fff;
+    color:#080b12;
+}
+
+.reject{
+    background:#202733;
+    color:#fff;
+    border:1px solid #30394a;
+}
+
+.empty{
+    text-align:center;
+    padding:45px 15px;
+    color:#788396;
+    background:#10151f;
+    border:1px solid #252d3b;
+    border-radius:16px;
+}
+
+.loading{
+    text-align:center;
+    color:#8994a7;
+    padding:30px;
+}
+
+@media(max-width:650px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .top{
+        align-items:flex-start;
+    }
+
+    .top h1{
+        font-size:23px;
+    }
+
+    .request-head{
+        flex-direction:column;
+    }
+
+    .tokens{
+        text-align:left;
+    }
+
+    .price{
+        text-align:left;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <div class="logo">
+            <img src="./icon.png.PNG">
+            <span>Token Cards</span>
+        </div>
+
+        <div class="admin-badge">
+            PANEL PRIVADO
+        </div>
+
+    </div>
+</header>
+
+<main>
+
+    <!-- LOGIN -->
+
+    <section class="login" id="login">
+
+        <h1>Panel de administración</h1>
+
+        <p>
+            Introduce la clave administrativa para
+            gestionar las solicitudes de recarga.
+        </p>
+
+        <input
+            id="adminKey"
+            type="password"
+            placeholder="Clave administrativa"
+            autocomplete="off"
+        >
+
+        <button onclick="loginAdmin()">
+            Entrar
+        </button>
+
+        <div class="error" id="loginError">
+            Clave incorrecta o servidor no disponible.
+        </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+
+    <section class="dashboard" id="dashboard">
+
+        <div class="top">
+
+            <div>
+                <h1>Solicitudes</h1>
+            </div>
+
+            <button
+                class="refresh"
+                onclick="loadRequests()">
+                ↻ Actualizar
+            </button>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+                <div class="stat-label">
+                    Total
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalCount">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    Pendientes
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="pendingCount">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    TOK solicitados
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="tokenCount">
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <div
+            class="requests"
+            id="requests">
+
+            <div class="loading">
+                Cargando solicitudes...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+let ADMIN_KEY = "";
+
+
+/* ==========================
+   LOGIN
+========================== */
+
+async function loginAdmin(){
+
+    const input =
+        document.getElementById("adminKey");
+
+    const key =
+        input.value.trim();
+
+    const error =
+        document.getElementById("loginError");
+
+    if(!key){
+
+        error.textContent =
+            "Introduce la clave administrativa.";
+
+        error.style.display = "block";
+
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch("/api/admin/requests",{
+                headers:{
+                    "x-admin-key":key
+                }
+            });
+
+        if(!response.ok){
+
+            throw new Error("No autorizado");
+        }
+
+        ADMIN_KEY = key;
+
+        sessionStorage.setItem(
+            "adminKey",
+            key
+        );
+
+        document.getElementById(
+            "login"
+        ).style.display = "none";
+
+        document.getElementById(
+            "dashboard"
+        ).style.display = "block";
+
+        renderRequests(
+            await response.json()
+        );
+
+    }catch(error){
+
+        error = document.getElementById(
+            "loginError"
+        );
+
+        error.textContent =
+            "Clave incorrecta o servidor no disponible.";
+
+        error.style.display = "block";
+    }
+}
+
+
+/* ==========================
+   CARGAR SOLICITUDES
+========================== */
+
+async function loadRequests(){
+
+    try{
+
+        const response =
+            await fetch("/api/admin/requests",{
+                headers:{
+                    "x-admin-key":ADMIN_KEY
+                }
+            });
+
+        if(response.status === 401){
+
+            logout();
+            return;
+        }
+
+        if(!response.ok){
+
+            throw new Error(
+                "Error cargando solicitudes"
+            );
+        }
+
+        const data =
+            await response.json();
+
+        renderRequests(data);
+
+    }catch(error){
+
+        document.getElementById(
+            "requests"
+        ).innerHTML = `
+            <div class="empty">
+                No se pudieron cargar las solicitudes.
+            </div>
+        `;
+    }
+}
+
+
+/* ==========================
+   MOSTRAR SOLICITUDES
+========================== */
+
+function renderRequests(data){
+
+    const container =
+        document.getElementById("requests");
+
+    document.getElementById(
+        "totalCount"
+    ).textContent = data.length;
+
+    const pending =
+        data.filter(
+            item => item.status === "pending"
+        ).length;
+
+    document.getElementById(
+        "pendingCount"
+    ).textContent = pending;
+
+    const tokens =
+        data.reduce(
+            (total,item) =>
+                total + Number(item.tokens || 0),
+            0
+        );
+
+    document.getElementById(
+        "tokenCount"
+    ).textContent = tokens;
+
+
+    if(!data.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                No hay solicitudes todavía.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        data.map(item => {
+
+            const date =
+                new Date(
+                    item.created_at
+                ).toLocaleString(
+                    "es-DO",
+                    {
+                        dateStyle:"short",
+                        timeStyle:"short"
+                    }
+                );
+
+            const statusText = {
+
+                pending:"Pendiente",
+
+                approved:"Aprobada",
+
+                rejected:"Rechazada"
+
+            }[item.status] || item.status;
+
+
+            return `
+
+            <article class="request">
+
+                <div class="request-head">
+
+                    <div>
+
+                        <div class="request-id">
+                            Solicitud #${item.id}
+                        </div>
+
+                        <div class="request-name">
+                            ${escapeHTML(item.name)}
+                        </div>
+
+                        <div class="request-email">
+                            ${escapeHTML(item.email)}
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <div class="tokens">
+                            ${item.tokens} TOK
+                        </div>
+
+                        <div class="price">
+                            US$${Number(
+                                item.price
+                            ).toFixed(2)}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="review">
+                    ${escapeHTML(item.review)}
+                </div>
+
+
+                <div class="meta">
+                    ${date}
+                </div>
+
+
+                <div class="status ${item.status}">
+                    ${statusText}
+                </div>
+
+
+                ${
+                    item.status === "pending"
+                    ? `
+
+                    <div class="actions">
+
+                        <button
+                            class="approve"
+                            onclick="approveRequest(${item.id})">
+                            Aprobar +${item.tokens} TOK
+                        </button>
+
+                        <button
+                            class="reject"
+                            onclick="rejectRequest(${item.id})">
+                            Rechazar
+                        </button>
+
+                    </div>
+
+                    `
+                    : ""
+                }
+
+            </article>
+
+            `;
+
+        }).join("");
+}
+
+
+/* ==========================
+   APROBAR
+========================== */
+
+async function approveRequest(id){
+
+    if(!confirm(
+        "¿Aprobar esta recarga?"
+    )){
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/approve/${id}`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "x-admin-key":ADMIN_KEY
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            alert(
+                data.error ||
+                "No se pudo aprobar."
+            );
+
+            return;
+        }
+
+        alert(
+            data.message ||
+            "Recarga aprobada."
+        );
+
+        loadRequests();
+
+    }catch(error){
+
+        alert(
+            "Error de conexión."
+        );
+    }
+}
+
+
+/* ==========================
+   RECHAZAR
+========================== */
+
+async function rejectRequest(id){
+
+    if(!confirm(
+        "¿Rechazar esta solicitud?"
+    )){
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/reject/${id}`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "x-admin-key":ADMIN_KEY
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            alert(
+                data.error ||
+                "No se pudo rechazar."
+            );
+
+            return;
+        }
+
+        alert(
+            data.message ||
+            "Solicitud rechazada."
+        );
+
+        loadRequests();
+
+    }catch(error){
+
+        alert(
+            "Error de conexión."
+        );
+    }
+}
+
+
+/* ==========================
+   ESCAPAR HTML
+========================== */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* ==========================
+   CERRAR SESIÓN
+========================== */
+
+function logout(){
+
+    ADMIN_KEY = "";
+
+    sessionStorage.removeItem(
+        "adminKey"
+    );
+
+    document.getElementById(
+        "dashboard"
+    ).style.display = "none";
+
+    document.getElementById(
+        "login"
+    ).style.display = "block";
+}
+
+
+/* ==========================
+   RECUPERAR SESIÓN
+========================== */
+
+async function restoreSession(){
+
+    const saved =
+        sessionStorage.getItem(
+            "adminKey"
+        );
+
+    if(!saved){
+        return;
+    }
+
+    ADMIN_KEY = saved;
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/admin/requests",
+                {
+                    headers:{
+                        "x-admin-key":ADMIN_KEY
+                    }
+                }
+            );
+
+        if(!response.ok){
+
+            logout();
+            return;
+        }
+
+        document.getElementById(
+            "login"
+        ).style.display = "none";
+
+        document.getElementById(
+            "dashboard"
+        ).style.display = "block";
+
+        renderRequests(
+            await response.json()
+        );
+
+    }catch(error){
+
+        logout();
+    }
+}
+
+
+/* ==========================
+   INICIO
+========================== */
+
+restoreSession();
+
+</script>
+
+</body>
+</html>
