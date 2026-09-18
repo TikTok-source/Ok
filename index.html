@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1">
+
+<title>Token Cards</title>
+
+<link rel="icon" type="image/png" href="./icon.png.PNG">
+<link rel="apple-touch-icon" href="./icon.png.PNG">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top,#15243a 0,#080d15 45%,#05080d 100%);
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    background:rgba(7,12,20,.88);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid #1b2b3d;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:19px;
+    font-weight:800;
+}
+
+.logo-mark{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    background:#15263a;
+    border:1px solid #29435d;
+}
+
+.balance{
+    padding:10px 14px;
+    border-radius:13px;
+    background:#101d2c;
+    border:1px solid #294159;
+    font-weight:800;
+}
+
+.balance span{
+    color:#6da9ff;
+}
+
+main{
+    width:min(950px,100%);
+    margin:auto;
+    padding:22px 16px 50px;
+}
+
+.hero{
+    padding:25px;
+    border-radius:24px;
+    background:
+        linear-gradient(145deg,rgba(24,43,65,.9),rgba(8,15,24,.95));
+    border:1px solid #243b52;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+    margin-bottom:25px;
+}
+
+.hero h1{
+    font-size:30px;
+    margin-bottom:9px;
+}
+
+.hero p{
+    color:#9db0c4;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    font:inherit;
+    font-weight:750;
+}
+
+.primary{
+    background:#fff;
+    color:#05080d;
+    padding:12px 17px;
+    border-radius:12px;
+}
+
+.primary:active{
+    transform:scale(.98);
+}
+
+.section-title{
+    margin:25px 0 14px;
+    font-size:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(155px,1fr));
+    gap:14px;
+}
+
+.product{
+    background:rgba(12,21,32,.94);
+    border:1px solid #1d3044;
+    border-radius:19px;
+    padding:17px;
+    transition:.2s;
+}
+
+.product:hover{
+    border-color:#365675;
+    transform:translateY(-2px);
+}
+
+.product-icon{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    background:#132337;
+    border:1px solid #29445e;
+    margin-bottom:15px;
+    font-size:22px;
+}
+
+.product h3{
+    font-size:16px;
+    margin-bottom:7px;
+}
+
+.price{
+    color:#70aaff;
+    font-size:17px;
+    font-weight:850;
+    margin-bottom:14px;
+}
+
+.buy{
+    width:100%;
+    padding:11px;
+    border-radius:11px;
+    background:#162639;
+    color:#fff;
+    border:1px solid #2a435c;
+}
+
+.buy:active{
+    transform:scale(.98);
+}
+
+.notice{
+    margin-top:20px;
+    padding:13px;
+    border-radius:13px;
+    background:#0d1825;
+    border:1px solid #1d3044;
+    color:#8297ac;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    background:rgba(0,0,0,.78);
+    backdrop-filter:blur(8px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.box{
+    width:min(430px,100%);
+    max-height:90vh;
+    overflow:auto;
+    padding:22px;
+    border-radius:22px;
+    background:#0d1723;
+    border:1px solid #2a4057;
+    box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+
+.box-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.box h2{
+    font-size:21px;
+}
+
+.close{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:#172536;
+    color:#fff;
+}
+
+label{
+    display:block;
+    margin:13px 0 6px;
+    color:#a7b9cc;
+    font-size:14px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:13px;
+    border-radius:11px;
+    border:1px solid #2b4057;
+    background:#07101a;
+    color:#fff;
+    outline:none;
+    font:inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#5887b5;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.info{
+    margin:13px 0;
+    padding:13px;
+    border-radius:12px;
+    background:#111f2e;
+    border:1px solid #1d344a;
+    color:#9eb1c4;
+    font-size:14px;
+}
+
+.info strong{
+    color:#fff;
+}
+
+.submit{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+}
+
+.message{
+    margin-top:13px;
+    padding:10px;
+    border-radius:10px;
+    display:none;
+    font-size:14px;
+}
+
+.message.show{
+    display:block;
+}
+
+.success{
+    background:#0d291b;
+    color:#7ee2a4;
+    border:1px solid #1b5934;
+}
+
+.error{
+    background:#2b1111;
+    color:#ff9c9c;
+    border:1px solid #612525;
+}
+
+.card-demo{
+    margin-top:15px;
+    padding:22px;
+    border-radius:19px;
+    background:
+        linear-gradient(135deg,#192d45,#07101b);
+    border:1px solid #35516c;
+}
+
+.card-demo .chip{
+    width:38px;
+    height:27px;
+    border-radius:7px;
+    background:#9aa6b3;
+    margin-bottom:25px;
+}
+
+.card-number{
+    letter-spacing:2px;
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+.card-bottom{
+    display:flex;
+    justify-content:space-between;
+    color:#a9bbcd;
+    font-size:12px;
+}
+
+.demo-label{
+    margin-top:15px;
+    text-align:center;
+    color:#ffbf69;
+    font-size:12px;
+    font-weight:800;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <div class="logo-mark">◈</div>
+        <span>Token Cards</span>
+    </div>
+
+    <div class="balance">
+        <span id="balance">0</span> TOK
+    </div>
+
+</header>
+
+<main>
+
+<section class="hero">
+
+    <h1>Tarjetas DEMO</h1>
+
+    <p>
+        Compra tarjetas ficticias utilizando tus TOK.
+        Las tarjetas generadas no son válidas para pagos reales.
+    </p>
+
+    <button class="primary" onclick="openRecharge()">
+        + Recargar TOK
+    </button>
+
+</section>
+
+<h2 class="section-title">
+    Catálogo
+</h2>
+
+<div class="grid" id="products"></div>
+
+<div class="notice">
+    <strong>Modo demostración:</strong>
+    los TOK son créditos internos de esta aplicación.
+    Las tarjetas mostradas son datos ficticios.
+</div>
+
+</main>
+
+
+<!-- RECARGA -->
+
+<div class="modal" id="rechargeModal">
+
+<div class="box">
+
+    <div class="box-header">
+        <h2>Solicitar TOK</h2>
+
+        <button class="close"
+                onclick="closeRecharge()">×</button>
+    </div>
+
+    <div class="info">
+        Conversión:
+        <strong>10 TOK = US$1</strong>
+    </div>
+
+    <label>Nombre</label>
+
+    <input
+        id="name"
+        type="text"
+        maxlength="80"
+        placeholder="Tu nombre">
+
+    <label>Correo</label>
+
+    <input
+        id="email"
+        type="email"
+        maxlength="150"
+        placeholder="correo@ejemplo.com">
+
+    <label>Reseña</label>
+
+    <textarea
+        id="review"
+        maxlength="500"
+        placeholder="Escribe tu reseña..."></textarea>
+
+    <label>Cantidad</label>
+
+    <select id="tokens"
+            onchange="updatePrice()">
+
+        <option value="10">
+            10 TOK — US$1
+        </option>
+
+        <option value="20">
+            20 TOK — US$2
+        </option>
+
+        <option value="30">
+            30 TOK — US$3
+        </option>
+
+        <option value="50">
+            50 TOK — US$5
+        </option>
+
+        <option value="100">
+            100 TOK — US$10
+        </option>
+
+        <option value="200">
+            200 TOK — US$20
+        </option>
+
+    </select>
+
+    <div class="info">
+        Precio:
+        <strong id="price">US$1.00</strong>
+    </div>
+
+    <button
+        class="primary submit"
+        onclick="sendRecharge()">
+
+        Enviar solicitud
+
+    </button>
+
+    <div id="message"
+         class="message"></div>
+
+</div>
+
+</div>
+
+
+<!-- TARJETA DEMO -->
+
+<div class="modal" id="cardModal">
+
+<div class="box">
+
+    <div class="box-header">
+
+        <h2>Tarjeta generada</h2>
+
+        <button class="close"
+                onclick="closeCard()">×</button>
+
+    </div>
+
+    <div class="card-demo">
+
+        <div class="chip"></div>
+
+        <div class="card-number"
+             id="cardNumber">
+        </div>
+
+        <div class="card-bottom">
+
+            <span>
+                DEMO USER
+            </span>
+
+            <span id="cardDate"></span>
+
+        </div>
+
+    </div>
+
+    <div class="info">
+        CVV:
+        <strong id="cardCvv"></strong>
+    </div>
+
+    <div class="demo-label">
+        DEMO — NO VÁLIDA PARA PAGOS
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const products = [
+    {
+        name:"Card Demo Basic",
+        price:1
+    },
+    {
+        name:"Card Demo Silver",
+        price:2
+    },
+    {
+        name:"Card Demo Gold",
+        price:4
+    },
+    {
+        name:"Card Demo Pro",
+        price:6
+    },
+    {
+        name:"Card Demo Premium",
+        price:8
+    },
+    {
+        name:"Card Demo Ultra",
+        price:10
+    }
+];
+
+let currentEmail = localStorage.getItem(
+    "tokenCardsEmail"
+) || "";
+
+
+/* PRODUCTOS */
+
+function renderProducts(){
+
+    const container =
+        document.getElementById("products");
+
+    container.innerHTML =
+        products.map((product,index)=>`
+
+        <div class="product">
+
+            <div class="product-icon">
+                ◈
+            </div>
+
+            <h3>
+                ${product.name}
+            </h3>
+
+            <div class="price">
+                ${product.price} TOK
+            </div>
+
+            <button
+                class="buy"
+                onclick="buy(${index})">
+
+                Comprar
+
+            </button>
+
+        </div>
+
+    `).join("");
+}
+
+
+/* SALDO */
+
+async function loadBalance(){
+
+    if(!currentEmail){
+
+        document.getElementById("balance")
+            .textContent = "0";
+
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/balance?email=" +
+                encodeURIComponent(currentEmail)
+            );
+
+        const data =
+            await response.json();
+
+        document.getElementById("balance")
+            .textContent =
+            Number(data.balance || 0);
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+}
+
+
+/* RECARGA */
+
+function openRecharge(){
+
+    document
+        .getElementById("rechargeModal")
+        .classList.add("show");
+
+}
+
+function closeRecharge(){
+
+    document
+        .getElementById("rechargeModal")
+        .classList.remove("show");
+
+}
+
+function updatePrice(){
+
+    const tokens =
+        Number(
+            document.getElementById("tokens").value
+        );
+
+    document
+        .getElementById("price")
+        .textContent =
+        "US$" + (tokens / 10).toFixed(2);
+
+}
+
+
+async function sendRecharge(){
+
+    const name =
+        document.getElementById("name")
+            .value.trim();
+
+    const email =
+        document.getElementById("email")
+            .value.trim();
+
+    const review =
+        document.getElementById("review")
+            .value.trim();
+
+    const tokens =
+        Number(
+            document.getElementById("tokens").value
+        );
+
+    const message =
+        document.getElementById("message");
+
+    message.className =
+        "message show";
+
+    if(!name || !email || !review){
+
+        message.classList.add("error");
+
+        message.textContent =
+            "Completa todos los campos.";
+
+        return;
+    }
+
+    if(!email.includes("@")){
+
+        message.classList.add("error");
+
+        message.textContent =
+            "Introduce un correo válido.";
+
+        return;
+    }
+
+    message.textContent =
+        "Enviando solicitud...";
+
+    try{
+
+        const response =
+            await fetch("/api/recharge",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    name,
+                    email,
+                    review,
+                    tokens
+                })
+
+            });
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                "No se pudo enviar."
+            );
+
+        }
+
+        currentEmail = email;
+
+        localStorage.setItem(
+            "tokenCardsEmail",
+            email
+        );
+
+        message.classList.remove("error");
+        message.classList.add("success");
+
+        message.textContent =
+            "Solicitud enviada. Queda pendiente de aprobación.";
+
+        document.getElementById("name")
+            .value = "";
+
+        document.getElementById("review")
+            .value = "";
+
+        setTimeout(()=>{
+
+            closeRecharge();
+            message.className =
+                "message";
+
+        },2500);
+
+    }catch(error){
+
+        message.classList.add("error");
+
+        message.textContent =
+            error.message ||
+            "Error de conexión.";
+
+    }
+
+}
+
+
+/* COMPRA */
+
+async function buy(index){
+
+    if(!currentEmail){
+
+        alert(
+            "Primero solicita una recarga usando tu correo."
+        );
+
+        openRecharge();
+
+        return;
+    }
+
+    const product =
+        products[index];
+
+    try{
+
+        /*
+         Aquí se consulta el saldo real
+         del servidor antes de permitir
+         la compra.
+        */
+
+        const response =
+            await fetch(
+                "/api/balance?email=" +
+                encodeURIComponent(currentEmail)
+            );
+
+        const data =
+            await response.json();
+
+        const balance =
+            Number(data.balance || 0);
+
+        if(balance < product.price){
+
+            alert(
+                "Saldo insuficiente.\n\n" +
+                "Necesitas " +
+                product.price +
+                " TOK."
+            );
+
+            return;
+        }
+
+        /*
+         El siguiente endpoint que añadiremos
+         al backend será /api/purchase.
+
+         Así el servidor descontará los TOK
+         realmente, en lugar de hacerlo solamente
+         en JavaScript.
+        */
+
+        const purchase =
+            await fetch("/api/purchase",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    email:currentEmail,
+                    price:product.price
+                })
+
+            });
+
+        const result =
+            await purchase.json();
+
+        if(!purchase.ok){
+
+            throw new Error(
+                result.error ||
+                "No se pudo completar la compra."
+            );
+
+        }
+
+        showDemoCard();
+
+        loadBalance();
+
+    }catch(error){
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* TARJETA DEMO */
+
+function randomDigits(length){
+
+    let result = "";
+
+    for(let i=0;i<length;i++){
+
+        result +=
+            Math.floor(Math.random()*10);
+
+    }
+
+    return result;
+}
+
+
+function showDemoCard(){
+
+    const number =
+        "DEMO-" +
+        randomDigits(4) +
+        "-" +
+        randomDigits(4) +
+        "-" +
+        randomDigits(4);
+
+    const month =
+        String(
+            Math.floor(Math.random()*12)+1
+        ).padStart(2,"0");
+
+    const year =
+        String(
+            new Date().getFullYear() +
+            Math.floor(Math.random()*4)
+        );
+
+    const cvv =
+        randomDigits(3);
+
+    document.getElementById("cardNumber")
+        .textContent = number;
+
+    document.getElementById("cardDate")
+        .textContent =
+        month + "/" + year;
+
+    document.getElementById("cardCvv")
+        .textContent = cvv;
+
+    document
+        .getElementById("cardModal")
+        .classList.add("show");
+
+}
+
+
+function closeCard(){
+
+    document
+        .getElementById("cardModal")
+        .classList.remove("show");
+
+}
+
+
+/* INICIO */
+
+renderProducts();
+updatePrice();
+loadBalance();
+
+</script>
+
+</body>
+</html>
