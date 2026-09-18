@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏪 Tienda Tarjetas</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, Arial; max-width: 480px; margin: auto; padding: 15px; background: #f3f4f6; }
+    h1 { text-align: center; color: #1e40af; }
+    .btn-recargar { width: 100%; padding: 14px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 16px; margin-bottom: 20px; }
+    .tarjeta { background: white; border-radius: 14px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 10px #00000012; }
+    .precio { background: #f59e0b; color: white; padding: 8px 14px; border-radius: 8px; font-weight: bold; display: inline-block; }
+    .comprar { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 15px; float: right; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 380px; }
+    input, select { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; }
+    .enviar { width: 100%; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 10px; font-size: 17px; margin-top: 10px; }
+    .alerta { padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
+    .ok { background: #dcfce7; color: #166534; }
+    .mal { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+  <h1>🏪 TIENDA DE TARJETAS</h1>
+  <button class="btn-recargar" onclick="cargarLista()">🔄 RECARGAR TARJETAS</button>
+
+  <div id="listaTarjetas"></div>
+
+  <!-- Formulario Modal -->
+  <div id="miModal" class="modal">
+    <div class="modal-content">
+      <h2>📝 FORMULARIO DE COMPRA</h2>
+      <input type="hidden" id="idTarjeta">
+      <input type="text" id="nombre" placeholder="Tu Nombre Completo">
+      <input type="email" id="correo" placeholder="Tu Correo Gmail">
+      <input type="text" id="direccion" placeholder="Dirección / Ubicación">
+      <select id="pago">
+        <option value="">Método de Pago</option>
+        <option>Tokens</option>
+        <option>Transferencia</option>
+        <option>Efectivo</option>
+      </select>
+      <button class="enviar" onclick="enviarCompra()">✅ ENVIAR Y PAGAR</button>
+      <button style="width:100%;padding:12px;background:#9ca3af;border:none;border-radius:8px;margin-top:8px;" onclick="cerrarModal()">CERRAR</button>
+      <div id="alerta" class="alerta"></div>
+    </div>
+  </div>
+
+<script>
+let idSeleccionado = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  cargarLista();
+});
+
+async function cargarLista() {
+  const contenedor = document.getElementById("listaTarjetas");
+  contenedor.innerHTML = "<p style='text-align:center;'>Cargando tarjetas...</p>";
+
+  try {
+    const res = await fetch("/api/lista");
+    const texto = await res.text();
+    let datos;
+    try { datos = JSON.parse(texto); } 
+    catch { throw new Error("Error de conexión"); }
+
+    if (!datos.ok) throw new Error(datos.error);
+
+    contenedor.innerHTML = "";
+    datos.lista.forEach(t => {
+      const div = document.createElement("div");
+      div.className = "tarjeta";
+      div.innerHTML = `
+        <p style="font-size:18px;letter-spacing:1px;"><strong>${t.mostrar}</strong></p>
+        <p>📅 Vence: ${t.fecha} | 🔢 Tokens: ${t.tokens}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+          <span class="precio">$${t.precio * t.tokens} USD</span>
+          <button class="comprar" onclick="abrirFormulario(${t.id})">Comprar</button>
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
+
+  } catch (e) {
+    contenedor.innerHTML = `<p style="color:red;text-align:center;">❌ ${e.message}</p>`;
+  }
+}
+
+function abrirFormulario(id) {
+  idSeleccionado = id;
+  document.getElementById("idTarjeta").value = id;
+  document.getElementById("miModal").style.display = "flex";
+  document.getElementById("alerta").style.display = "none";
+}
+
+function cerrarModal() {
+  document.getElementById("miModal").style.display = "none";
+}
+
+async function enviarCompra() {
+  const alerta = document.getElementById("alerta");
+  alerta.style.display = "none";
+
+  const datos = {
+    id: idSeleccionado,
+    nombre: document.getElementById("nombre").value,
+    correo: document.getElementById("correo").value,
+    dir: document.getElementById("direccion").value,
+    pago: document.getElementById("pago").value
+  };
+
+  try {
+    const res = await fetch("/api/comprar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos)
+    });
+
+    const texto = await res.text();
+    let json;
+    try { json = JSON.parse(texto); }
+    catch { throw new Error("El servidor devolvió error HTML ❌"); }
+
+    alerta.style.display = "block";
+    if (json.ok) {
+      alerta.className = "alerta ok";
+      alerta.textContent = json.mensaje;
+      setTimeout(() => {
+        cerrarModal();
+        cargarLista();
+      }, 2500);
+    } else {
+      alerta.className = "alerta mal";
+      alerta.textContent = "❌ " + json.error;
+    }
+
+  } catch (err) {
+    alerta.style.display = "block";
+    alerta.className = "alerta mal";
+    alerta.textContent = "❌ " + err.message;
+  }
+}
+</script>
+
+</body>
+</html>
