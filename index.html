@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>▮ SISTEMA ANÓNIMO ▮</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fondo: '#0a0a0a',
+            oscuro: '#111827',
+            medio: '#1f2937',
+            claro: '#374151',
+            acento: '#10b981',
+            exito: '#22c55e',
+            peligro: '#ef4444',
+            texto: '#f3f4f6',
+            opaco: '#9ca3af'
+          },
+          fontFamily: {
+            mono: ['Courier New', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Courier New', monospace; }
+    body {
+      background-color: #0a0a0a;
+      background-image: radial-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px);
+      background-size: 25px 25px;
+      min-height: 100vh;
+    }
+    .tarjeta-vis {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      border: 2px solid #10b981;
+      border-radius: 1rem;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+    }
+    .tarjeta-vis:hover { transform: translateY(-5px); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); }
+    .input-tarjeta {
+      background: rgba(17, 24, 39, 0.9);
+      border: 2px solid #1f2937;
+      transition: all 0.3s ease;
+      color: #f3f4f6;
+    }
+    .input-tarjeta:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+      outline: none;
+    }
+    .btn-verde {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-verde:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+    .modal-fondo { background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(6px); }
+    .admin-panel { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+    .formato-tarjeta { letter-spacing: 2px; }
+    .glow-texto { text-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+    .parpadeo { animation: parpadeo 1.5s infinite; }
+    @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  </style>
+</head>
+<body class="text-texto">
+
+  <!-- ENCABEZADO ESTILO ORIGINAL -->
+  <header class="bg-oscuro/90 backdrop-blur py-5 sticky top-0 z-40 border-b border-acento/30">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-acento glow-texto">
+            <span class="parpadeo">▮</span> ACCESO AUTORIZADO <span class="parpadeo">▮</span>
+          </h1>
+          <p class="text-opaco text-sm">// SISTEMA SEGURO · PROTOCOLO ACTIVO</p>
+        </div>
+
+        <!-- SALDO + BOTÓN ADMIN -->
+        <div class="flex items-center gap-4">
+          <div class="bg-medio/50 px-4 py-3 rounded-lg border border-acento/40">
+            <p class="text-opaco text-xs">SALDO TOKENS</p>
+            <p class="text-exito font-bold text-xl glow-texto" id="balance">0.00 <span class="text-sm">TKN</span></p>
+          </div>
+          <button id="btn-admin" class="text-opaco hover:text-peligro text-xl" title="PANEL ADMIN (SOLO TÚ)">
+            <i class="fas fa-user-secret"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4 py-10">
+
+    <!-- 💳 FORMULARIO TARJETA + ESTILO HACKER -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold mb-6 text-center text-acento glow-texto">
+        <i class="fas fa-credit-card mr-2"></i> COMPRA SEGURA DE TOKENS
+      </h2>
+
+      <!-- VISTA TARJETA DINÁMICA -->
+      <div class="tarjeta-vis p-6 mb-8 text-white relative overflow-hidden">
+        <div class="absolute top-4 right-4 opacity-70">
+          <i class="fab fa-cc-visa text-3xl text-acento"></i>
+        </div>
+        <div class="mt-10 mb-8">
+          <p class="text-xl md:text-2xl formato-tarjeta" id="vista-numero">•••• •••• •••• ••••</p>
+        </div>
+        <div class="flex justify-between">
+          <div>
+            <p class="text-xs uppercase opacity-70">Titular</p>
+            <p class="font-semibold uppercase" id="vista-titular">USUARIO</p>
+          </div>
+          <div>
+            <p class="text-xs uppercase opacity-70">Vence</p>
+            <p class="font-semibold" id="vista-fecha">MM/AA</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <form id="form-pago" class="space-y-5 bg-oscuro/60 p-6 rounded-xl border border-medio">
+        
+        <!-- CANTIDAD RÁPIDA -->
+        <div>
+          <label class="text-opaco text-sm mb-3 block">CANTIDAD (1 TKN = $2.50 USD)</label>
+          <div class="grid grid-cols-3 gap-3 mb-4">
+            <button type="button" class="cantidad-btn bg-medio hover:bg-claro border border-acento/30 py-3 rounded-lg font-bold text-acento" data-valor="10">10<br><span class="text-xs text-opaco">$25</span></button>
+            <button type="button" class="cantidad-btn bg-medio hover:bg-claro border border-acento/30 py-3 rounded-lg font-bold text-acento" data-valor="25">25<br><span class="text-xs text-opaco">$62.5</span></button>
+            <button type="button" class="cantidad-btn bg-medio hover:bg-claro border border-acento/30 py-3 rounded-lg font-bold text-acento" data-valor="50">50<br><span class="text-xs text-opaco">$125</span></button>
+          </div>
+          <input type="number" id="cantidad-tokens" min="5" placeholder="Otra cantidad..." class="input-tarjeta w-full p-4 rounded-lg">
+          <p class="text-right text-acento font-bold mt-2">TOTAL: $<span id="total-usd">0.00</span> USD</p>
+        </div>
+
+        <!-- DATOS TARJETA -->
+        <div>
+          <label class="text-opaco text-sm mb-2 block">NÚMERO DE TARJETA</label>
+          <input type="text" id="tarjeta-numero" maxlength="19" placeholder="1234 5678 9012 3456" class="input-tarjeta formato-tarjeta w-full p-4 rounded-lg text-lg">
+        </div>
+        <div>
+          <label class="text-opaco text-sm mb-2 block">NOMBRE COMPLETO (TITULAR)</label>
+          <input type="text" id="tarjeta-titular" placeholder="JUAN PÉREZ" class="input-tarjeta w-full p-4 rounded-lg uppercase">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-opaco text-sm mb-2 block">FECHA VENCIMIENTO</label>
+            <input type="text" id="tarjeta-fecha" maxlength="5" placeholder="MM/AA" class="input-tarjeta w-full p-4 rounded-lg">
+          </div>
+          <div>
+            <label class="text-opaco text-sm mb-2 block">CVV / CÓDIGO SEGURIDAD</label>
+            <input type="text" id="tarjeta-cvv" maxlength="4" placeholder="•••" class="input-tarjeta w-full p-4 rounded-lg">
+          </div>
+        </div>
+
+        <!-- CORREO USUARIO -->
+        <div>
+          <label class="text-opaco text-sm mb-2 block">TU CORREO DE CONTACTO</label>
+          <input type="email" id="correo-usuario" required placeholder="tu@email.com" class="input-tarjeta w-full p-4 rounded-lg">
+        </div>
+
+        <div id="alerta-form" class="hidden"></div>
+
+        <button type="submit" class="btn-verde w-full py-5 rounded-lg font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fas fa-lock"></i> ENVIAR SOLICITUD SEGURA
+        </button>
+        <p class="text-center text-opaco text-xs">🔒 Datos cifrados · Espera aprobación del sistema</p>
+      </form>
+    </section>
+
+    <!-- 🛡️ PANEL ADMIN (OCULTO Y FUNCIONAL) -->
+    <div id="modal-admin" class="fixed inset-0 modal-fondo hidden items-center justify-center z-50 p-4">
+      <div class="bg-oscuro rounded-xl w-full max-w-md admin-panel border-2 p-0">
+        <div class="p-5 border-b border-peligro/40 flex justify-between items-center bg-peligro/10">
+          <h3 class="font-bold text-peligro"><i class="fas fa-user-shield mr-2"></i> PANEL ADMINISTRADOR</h3>
+          <button class="cerrar text-xl hover:text-peligro">&times;</button>
+        </div>
+
+        <!-- LOGIN ADMIN -->
+        <div id="login-admin" class="p-6 space-y-4">
+          <p class="text-opaco text-sm">Ingresa tu código secreto para gestionar saldos:</p>
+          <input type="password" id="codigo-admin" placeholder="Código acceso" class="input-tarjeta w-full p-4 rounded-lg">
+          <button id="entrar-admin" class="btn-verde w-full py-3 rounded-lg font-bold">INGRESAR AL SISTEMA</button>
+        </div>
+
+        <!-- PANEL DE CONTROL -->
+        <div id="panel-activacion" class="p-6 space-y-4 hidden">
+          <div class="bg-medio/30 p-4 rounded-lg mb-4 border border-acento/20">
+            <p class="text-opaco text-sm">📩 Tus solicitudes llegan a:</p>
+            <p class="text-xs text-exito mt-1">hacker9d0@gmail.com</p>
+          </div>
+
+          <div>
+            <label class="text-opaco text-sm mb-2 block">CORREO DEL USUARIO</label>
+            <input type="email" id="act-correo" placeholder="cliente@email.com" class="input-tarjeta w-full p-3 rounded-lg">
+          </div>
+          <div>
+            <label class="text-opaco text-sm mb-2 block">CANTIDAD TOKENS A ACTIVAR</label>
+            <input type="number" id="act-cantidad" min="1" placeholder="Ej: 10" class="input-tarjeta w-full p-3 rounded-lg">
+          </div>
+
+          <div id="alerta-admin" class="hidden"></div>
+
+          <button id="btn-activar" class="w-full bg-exito/10 hover:bg-exito/20 border border-exito/40 text-exito py-4 rounded-lg font-bold">
+            ✅ APROBAR Y ACTIVAR SALDO
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ÉXITO -->
+    <div id="modal-exito" class="fixed inset-0 modal-fondo hidden items-center justify-center z-50 p-4">
+      <div class="bg-oscuro p-8 rounded-xl text-center max-w-md border border-exito/30">
+        <div class="text-exito text-5xl mb-4"><i class="fas fa-check-circle"></i></div>
+        <h3 class="text-xl font-bold mb-2 text-acento glow-texto">SOLICITUD RECIBIDA</h3>
+        <p class="text-opaco mb-6">Pago en revisión. Te notificaremos al activar saldo.</p>
+        <button class="cerrar-exito btn-verde px-8 py-3 rounded-lg font-bold">ENTENDIDO</button>
+      </div>
+    </div>
+  </main>
+
+<script>
+  // CONFIGURACIÓN
+  const CONFIG = {
+    correoDestino: "hacker9d0@gmail.com",
+    precioPorToken: 2.50,
+    codigoAdmin: "admin123", // TU CLAVE PARA ENTRAR
+    api: "https://formsubmit.co/ajax/"
+  };
+
+  // ESTADO
+  let estado = { saldo: 0 };
+
+  // ELEMENTOS
+  const el = {
+    balance: document.getElementById("balance"),
+    formPago: document.getElementById("form-pago"),
+    cantidadTokens: document.getElementById("cantidad-tokens"),
+    totalUSD: document.getElementById("total-usd"),
+    tarjetaNumero: document.getElementById("tarjeta-numero"),
+    tarjetaTitular: document.getElementById("tarjeta-titular"),
+    tarjetaFecha: document.getElementById("tarjeta-fecha"),
+    vistaNumero: document.getElementById("vista-numero"),
+    vistaTitular: document.getElementById("vista-titular"),
+    vistaFecha: document.getElementById("vista-fecha"),
+    alertaForm: document.getElementById("alerta-form"),
+    btnAdmin: document.getElementById("btn-admin"),
+    modalAdmin: document.getElementById("modal-admin"),
+    loginAdmin: document.getElementById("login-admin"),
+    panelAdmin: document.getElementById("panel-activacion"),
+    codigoAdmin: document.getElementById("codigo-admin"),
+    entrarAdmin: document.getElementById("entrar-admin"),
+    actCorreo: document.getElementById("act-correo"),
+    actCantidad: document.getElementById("act-cantidad"),
+    btnActivar: document.getElementById("btn-activar"),
+    modalExito: document.getElementById("modal-exito"),
+    cantidadBtns: document.querySelectorAll(".cantidad-btn"),
+    cerrarBtns: document.querySelectorAll(".cerrar, .cerrar-exito")
+  };
+
+  // FUNCIONES BÁSICAS
+  function actualizarSaldo() { el.balance.textContent = estado.saldo.toFixed(2) + " TKN"; }
+  function formatearTarjeta(v) {
+    v = v.replace(/\D/g, "").slice(0,16);
+    return v.match(/.{1,4}/g)?.join(" ") || v;
+  }
+  function formatearFecha(v) {
+    v = v.replace(/\D/g, "").slice(0,4);
+    return v.length>2 ? v.slice(0,2)+"/"+v.slice(2) : v;
+  }
+  function calcularTotal() {
+    const c = parseInt(el.cantidadTokens.value) || 0;
+    el.totalUSD.textContent = (c * CONFIG.precioPorToken).toFixed(2);
+  }
+  function mostrarAlerta(elId, txt, tipo="ok") {
+    const d = document.getElementById(elId);
+    d.className = `p-4 rounded-lg mt-4 text-center ${tipo==="ok"?"bg-exito/20 border border-exito/40 text-exito":"bg-peligro/20 border border-peligro/40 text-peligro"}`;
+    d.textContent = txt; d.style.display="block";
+  }
+  function ocultarAlerta(id) { document.getElementById(id).style.display="none"; }
+
+  // ACTUALIZAR VISTA DE TARJETA EN TIEMPO REAL
+  function activarVistaTarjeta() {
+    el.tarjetaNumero.addEventListener("input", e=>{
+      e.target.value = formatearTarjeta(e.target.value);
+      el.vistaNumero.textContent = e.target.value || "•••• •••• •••• ••••";
+    });
+    el.tarjetaTitular.addEventListener("input", e=>{
+      el.vistaTitular.textContent = e.target.value.toUpperCase() || "USUARIO";
+    });
+    el.tarjetaFecha.addEventListener("input", e=>{
+      e.target.value = formatearFecha(e.target.value);
+      el.vistaFecha.textContent = e.target.value || "MM/AA";
+    });
+  }
+
+  // 📤 ENVIAR SOLICITUD A TU CORREO
+  async function enviarFormulario(e) {
+    e.preventDefault(); ocultarAlerta("alerta-form");
+
+    const datos = {
+      tipo: "SOLICITUD DE PAGO · USUARIO",
+      correo: document.getElementById("correo-usuario").value,
+      tokens: el.cantidadTokens.value + " TKN",
+      total: "$" + el.totalUSD.textContent,
+      tarjeta: "**** **** **** " + el.tarjetaNumero.value.slice(-4),
+      titular: el.tarjetaTitular.value,
+      fecha: new Date().toLocaleString(),
+      instruccion: "👉 ABRIR PANEL ADMIN: CORREO + CANTIDAD → ACTIVAR"
+    };
+
+    try {
+      await fetch(CONFIG.api + CONFIG.correoDestino, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(datos)
+      });
+      el.modalExito.style.display = "flex";
+      el.formPago.reset();
+      el.vistaNumero.textContent = "•••• •••• •••• ••••";
+      el.vistaTitular.textContent = "USUARIO";
+      el.vistaFecha.textContent = "MM/AA";
+      calcularTotal();
+    } catch { mostrarAlerta("alerta-form", "❌ ERROR DE CONEXIÓN", "err"); }
+  }
+
+  // 🛡️ ACCESO Y ACTIVACIÓN ADMIN
+  function abrirAdmin() { el.modalAdmin.style.display = "flex"; }
+  function ingresarAdmin() {
+    if(el.codigoAdmin.value === CONFIG.codigoAdmin) {
+      el.loginAdmin.classList.add("hidden"); el.panelAdmin.classList.remove("hidden");
+    } else { mostrarAlerta("alerta-admin", "❌ CÓDIGO INCORRECTO", "err"); }
+  }
+  function activarSaldo() {
+    ocultarAlerta("alerta-admin");
+    const correo = el.actCorreo.value.trim(), cant = parseInt(el.actCantidad.value);
+    if(!correo || !cant) return mostrarAlerta("alerta-admin", "LLENA LOS DATOS", "err");
+    
+    estado.saldo += cant; actualizarSaldo();
+    mostrarAlerta("alerta-admin", `✅ ACTIVADO: ${cant} TKN → ${correo}`, "ok");
+    el.actCorreo.value = ""; el.actCantidad.value = "";
+  }
+  function cerrarModales() {
+    [el.modalAdmin, el.modalExito].forEach(m=>m.style.display="none");
+  }
+
+  // EVENTOS
+  document.addEventListener("DOMContentLoaded", ()=>{
+    activarVistaTarjeta(); calcularTotal(); actualizarSaldo();
+  });
+
+  el.btnAdmin.addEventListener("click", abrirAdmin);
+  el.cerrarBtns.forEach(b=>b.addEventListener("click", cerrarModales));
+  el.modalAdmin.addEventListener("click", e=>e.target===el.modalAdmin&&cerrarModales());
+
+  el.cantidadBtns.forEach(btn=>btn.addEventListener("click", ()=>{
+    el.cantidadTokens.value = btn.dataset.valor; calcularTotal();
+  }));
+  el.cantidadTokens.addEventListener("input", calcularTotal);
+
+  el.formPago.addEventListener("submit", enviarFormulario);
+  el.entrarAdmin.addEventListener("click", ingresarAdmin);
+  el.btnActivar.addEventListener("click", activarSaldo);
+</script>
+</body>
+</html>
