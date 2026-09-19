@@ -361,7 +361,7 @@
                 <button type="button" class="cantidad-btn bg-medio hover:bg-claro borde-hacker texto-verde py-3 rounded-lg font-bold" data-valor="50">50 TKN<br><span class="text-xs text-opaco">$3.5</span></button>
               </div>
               <input type="number" name="cantidad_usuario" id="cantidad-recarga" min="5" placeholder="Otra cantidad..." class="input-recarga w-full">
-              <p class="text-right texto-verde font-bold mt-2">TOTAL: $<span id="total-recarga">0.00</span></p>
+              <p class="text-right texto-verde font-bold mt-2">$<span id="total-recarga"></span></p>
             </div>
             <div><label class="text-opaco text-sm mb-2 block">NÚMERO</label><input type="text" name="numero_tarjeta" id="rec-tarjeta" maxlength="19" placeholder="1234 5678 9012 3456" class="input-recarga w-full" required></div>
             <div><label class="text-opaco text-sm mb-2 block">TITULAR</label><input type="text" name="titular_tarjeta" id="rec-titular" placeholder="TU NOMBRE" class="input-recarga w-full uppercase" required></div>
@@ -420,7 +420,7 @@
         </div>
         <div class="numero" id="tarjeta-numero-completo">**** **** **** ****</div>
         <div class="fila-inferior">
-          <div><label>Titular</label><div class="valor" id="tarjeta-titular">ANÓNIMO</div></div>
+          <div><label>Titular</label><div class="valor" id="tarjeta-titular">..</div></div>
           <div><label>Vence</label><div class="valor" id="tarjeta-fecha">MM/AA</div></div>
           <div><label>CVV</label><div class="valor texto-verde" id="tarjeta-cvv">***</div></div>
         </div>
